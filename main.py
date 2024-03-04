@@ -679,7 +679,9 @@ def fill_in_cover_letter(
                 (By.XPATH, '//button[@data-qa="vacancy-response-letter-submit"]')
             )
         )
-        driver.execute_script("arguments[0].click()", submit_button)
+        driver.execute_script(
+            "arguments[0].scrollIntoView(); arguments[0].click()", submit_button
+        )
         time.sleep(1)
         try:
             error = wait.until(
@@ -721,14 +723,16 @@ def choose_resume(
             By.XPATH,
             f"//input[@id='{dict_resume.RESUME_CODES[f'{dict_resume.DEFAULT_RESUME}']}']",
         )
-        driver.execute_script("arguments[0].scrollIntoView();", default_button)
-        default_button.click()
+        driver.execute_script(
+            "arguments[0].scrollIntoView();  arguments[0].click();", default_button
+        )
 
         for resume, code in dict_resume.RESUME_CODES.items():
+            resume_button = driver.find_element(By.XPATH, f"//input[@id='{code}']")
+            driver.execute_script(
+                "arguments[0].scrollIntoView(); arguments[0].click();", resume_button
+            )
             if resume.lower() in job_title.lower():
-                resume_button = driver.find_element(By.XPATH, f"//input[@id='{code}']")
-                driver.execute_script("arguments[0].scrollIntoView();", resume_button)
-                resume_button.click()
                 break
     except NoSuchElementException as e:
         print(f"Failed to choose resume: Element not found {e}")
