@@ -39,21 +39,7 @@ class Status(Enum):
     FAILURE = 1
 
 
-os.system("cls")
-
-
 def read_text_file(relative_path, file_name, encoding="utf-8"):
-    """
-    Reads the contents of a text file.
-
-    Args:
-        relative_path (str): The relative path of the file.
-        file_name (str): The name of the file.
-        encoding (str, optional): The encoding of the file. Defaults to "utf-8".
-
-    Returns:
-        str: The contents of the file.
-    """
     file_path = os.path.join(relative_path, file_name)
     with open(file_path, "r", encoding=encoding) as f:
         return f.read()
@@ -105,16 +91,6 @@ WAIT = WebDriverWait(DRIVER, 10)
 
 
 def custom_wait(driver, timeout, condition_type, locator_tuple):
-    """
-    A function that performs a custom wait for a certain condition on a web element using Selenium WebDriver.
-
-    :param driver: The WebDriver instance to use for waiting.
-    :param timeout: The maximum time to wait for a condition to be true.
-    :param condition_type: The type of condition to wait for (e.g., presence_of_element_located, visibility_of_element_located, etc.).
-    :param locator_tuple: The tuple containing the locator strategy and locator value of the web element.
-
-    :return: The web element once the condition is met.
-    """
     wait = WebDriverWait(driver, timeout)
     return wait.until(condition_type(locator_tuple))
 
@@ -125,14 +101,7 @@ def eternal_wait(
     condition_type: Callable[[Any], bool],
     locator_tuple: Tuple[str, str],
 ) -> Any:
-    """
-    Waits for an element to satisfy a condition until timeout is reached.
-    :param driver: The WebDriver instance to use for waiting.
-    :param timeout: The maximum time to wait for a condition to be true.
-    :param condition_type: The type of condition to wait for (e.g., presence_of_element_located, visibility_of_element_located, etc.).
-    :param locator_tuple: The tuple containing the locator strategy and locator value of the web element.
-    :return: The web element once the condition is met.
-    """
+
     while True:
         try:
             element = WebDriverWait(driver, timeout).until(
@@ -148,53 +117,23 @@ def eternal_wait(
 
 
 def load_data_from_json(path):
-    """
-    Load data from a JSON file.
-
-    Args:
-        path (str): The path to the JSON file.
-
-    Returns:
-        dict: The data loaded from the JSON file.
-    """
     return json.load(open(path, "r", encoding="utf-8"))
 
 
 def save_data_to_json(data, path):
-    """
-    Save data to a JSON file.
 
-    Args:
-        data: The data to be saved to the JSON file.
-        path: The path to the JSON file.
-
-    Returns:
-        None
-    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     json.dump(data, open(path, "w", encoding="utf-8"))
 
 
 def add_cookies(cookies: List[Dict], driver: webdriver):
-    """
-    Add cookies to the webdriver.
 
-    :param cookies: A list of dictionaries representing the cookies to be added.
-    :param driver: The webdriver to which the cookies will be added.
-    :return: None
-    """
     for cookie in cookies:
         driver.add_cookie(cookie)
 
 
 def add_local_storage(local_storage: Dict[str, str], driver: webdriver):
-    """
-    Add items from the provided local_storage dictionary to the window.localStorage of the webdriver.
 
-    :param local_storage: A dictionary containing keys and values to be added to the window.localStorage
-    :param driver: The webdriver instance to execute the script on
-    :return: None
-    """
     keys = list(local_storage.keys())
     values = list(local_storage.values())
     for key, value in zip(keys, values):
@@ -206,28 +145,12 @@ def add_local_storage(local_storage: Dict[str, str], driver: webdriver):
 def get_first_folder(
     path: str,
 ) -> str:
-    """
-    Return the first folder in the given path.
 
-    Args:
-        path: The path to be parsed.
-
-    Returns:
-        str: The first folder in the given path.
-    """
     return os.path.normpath(path).split(os.sep)[0]
 
 
 def delete_folder(folder_path: str) -> None:
-    """
-    Deletes a folder and all its contents recursively.
 
-    Parameters:
-    - folder_path: str, the path to the folder to be deleted.
-
-    Returns:
-    - None
-    """
     if os.path.exists(folder_path):
         for filename in os.listdir(folder_path):
             file_path: str = os.path.join(folder_path, filename)
@@ -239,15 +162,7 @@ def delete_folder(folder_path: str) -> None:
 
 
 def success(driver: webdriver) -> bool:
-    """
-    Checks if the user is logged in successfully.
 
-    Parameters:
-    - driver: WebDriver, the driver.
-
-    Returns:
-    - bool: True if the user is logged in successfully, False otherwise.
-    """
     try:
         custom_wait(
             driver,
@@ -261,12 +176,7 @@ def success(driver: webdriver) -> bool:
 
 
 def navigate_and_check(probe_page: str, driver: webdriver) -> bool:
-    """
-    Navigates to a given web page using the provided webdriver and checks for success.
-    :param probe_page: the URL of the page to navigate to
-    :param driver: the webdriver to use for navigation
-    :return: True if the navigation and check is successful, False otherwise
-    """
+
     driver.get(probe_page)
     time.sleep(5)
     if success(driver):
@@ -288,18 +198,7 @@ def navigate_and_check(probe_page: str, driver: webdriver) -> bool:
 
 
 def login(login_page: str, driver: webdriver, username: str, password: str) -> None:
-    """
-    Logs into the given login page using the provided driver, username, and password.
 
-    Args:
-        login_page (str): The URL of the login page.
-        driver (webdriver): The Selenium webdriver object.
-        username (str): The username for logging in.
-        password (str): The password for logging in.
-
-    Returns:
-        None
-    """
     driver.get(login_page)
 
     show_more_button: WebElement = eternal_wait(
@@ -317,7 +216,8 @@ def login(login_page: str, driver: webdriver, username: str, password: str) -> N
         (By.XPATH, '//input[@data-qa="login-input-username"]'),
     )
     password_field: WebElement = eternal_wait(
-        driver, 10, EC.element_to_be_clickable, (By.XPATH, '//input[@type="password"]')
+        driver, 10, EC.element_to_be_clickable, (
+            By.XPATH, '//input[@type="password"]')
     )
 
     login_field.send_keys(username)
@@ -332,18 +232,7 @@ def login(login_page: str, driver: webdriver, username: str, password: str) -> N
     click_and_wait(login_button, 5)
 
 
-def check_cookies_and_login(
-    driver: webdriver,
-    login_page: str,
-    cookies_path: str,
-    local_storage_path: str,
-    search_link: str,
-    username: str,
-    password: str,
-) -> None:
-    """
-    Check cookies and login using the provided WebDriver, login page URL, cookies path, local storage path, search link, username, and password.
-    """
+def check_cookies_and_login(driver: webdriver,    login_page: str,    cookies_path: str,    local_storage_path: str,    search_link: str,    username: str,    password: str) -> None:
     driver.get(login_page)
 
     if os.path.exists(cookies_path) and os.path.exists(local_storage_path):
@@ -361,42 +250,26 @@ def check_cookies_and_login(
 
 def scroll_to_bottom(driver: webdriver, delay: float = 2.0) -> None:
     """Scrolls the page down until it reaches the bottom."""
-    last_height: int = driver.execute_script("return document.body.scrollHeight")
+    last_height: int = driver.execute_script(
+        "return document.body.scrollHeight")
     while True:
         driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")
         time.sleep(delay)
-        new_height: int = driver.execute_script("return document.body.scrollHeight")
+        new_height: int = driver.execute_script(
+            "return document.body.scrollHeight")
         if last_height == new_height:
             break
         last_height = new_height
 
 
 def click_and_wait(element: WebElement, delay: float = 1.0) -> None:
-    """
-    Clicks the given WebElement and waits for the given delay.
 
-    Args:
-        element: The WebElement to be clicked.
-        delay: The delay in seconds.
-
-    Returns:
-        None
-    """
     ACTION.move_to_element(element).click().perform()
     time.sleep(delay)
 
 
 def js_click(driver: webdriver, element: WebElement) -> None:
-    """
-    Clicks the given WebElement using JavaScript.
 
-    Args:
-        driver: The Selenium WebDriver object.
-        element: The WebElement to be clicked.
-
-    Returns:
-        None
-    """
     try:
         if element.is_displayed() and element.is_enabled():
             driver.execute_script(
@@ -420,18 +293,11 @@ def js_click(driver: webdriver, element: WebElement) -> None:
 def select_all_countries(
     driver: webdriver,
 ) -> None:
-    """
-    Selects all countries using the provided webdriver.
 
-    Args:
-        driver (webdriver): The webdriver to use for selecting the countries.
-
-    Returns:
-        None
-    """
     region_select_button: WebElement = WAIT.until(
         EC.element_to_be_clickable(
-            (By.XPATH, '//button[@data-qa="advanced-search-region-selectFromList"]')
+            (By.XPATH,
+             '//button[@data-qa="advanced-search-region-selectFromList"]')
         )
     )
     region_select_button.click()
@@ -451,12 +317,7 @@ def select_all_countries(
 def international_ok(
     driver: webdriver,
 ) -> None:
-    """
-    Clicks the international relocation confirmation button if it's present.
 
-    Returns:
-        None
-    """
     try:
         international: WebElement = WAIT.until(
             EC.element_to_be_clickable(
@@ -473,15 +334,7 @@ def check_cover_letter_popup(
     message: str,
     driver: webdriver,
 ) -> str:
-    """Check the cover letter popup and submit a message.
 
-    Args:
-        message (str): The cover letter message to be submitted.
-        WAIT (WebDriverWait): The WebDriverWait instance for waiting for elements.
-
-    Returns:
-        str: The status of the cover letter submission, either 'SUCCESS' or 'FAILURE'.
-    """
     global COUNTER
     try:
         cover_letter_popup = WAIT.until(
@@ -497,17 +350,20 @@ def check_cover_letter_popup(
         ACTION.click(
             WAIT.until(
                 EC.element_to_be_clickable(
-                    (By.XPATH, '//button[@data-qa="vacancy-response-submit-popup"]')
+                    (By.XPATH,
+                     '//button[@data-qa="vacancy-response-submit-popup"]')
                 )
             )
         ).perform()
 
         popup_cover_letter_submit_button = WAIT.until(
             EC.element_to_be_clickable(
-                (By.XPATH, '//button[@data-qa="vacancy-response-submit-popup"]')
+                (By.XPATH,
+                 '//button[@data-qa="vacancy-response-submit-popup"]')
             )
         )
-        driver.execute_script("arguments[0].click()", popup_cover_letter_submit_button)
+        driver.execute_script(
+            "arguments[0].click()", popup_cover_letter_submit_button)
         time.sleep(3)
         try:
             error = WAIT.until(
@@ -531,17 +387,7 @@ def check_cover_letter_popup(
 
 
 def set_value_with_event(element: WebElement, value: str, driver: webdriver):
-    """
-    Sets the value of a web element and triggers an input event.
 
-    Args:
-        element (WebElement): The web element to set the value for.
-        value (str): The value to set.
-        driver (webdriver): The webdriver instance to execute the script.
-
-    Returns:
-        None
-    """
     ACTION.move_to_element(element).click().perform()
     driver.execute_script("arguments[0].value = '';", element)
     driver.execute_script(
@@ -564,22 +410,11 @@ def answer_questions(
     driver: webdriver,
     wait: WebDriverWait,
 ) -> str:
-    """
-    Scrolls through the questions, answers them, and submits the response.
 
-    Args:
-    - driver: The WebDriver instance for interacting with the browser.
-    - WAIT: The WebDriverWait instance for waiting for elements to be located.
-    - ACTION: The ActionChains instance for performing browser actions.
-    - ANSWER: The string representing the answer to the questions.
-    - COUNTER: The integer representing the count of questions answered.
-
-    Returns:
-    - str: The status of the response, either 'SUCCESS' or 'FAILURE'.
-    """
     global COUNTER
     try:
-        ul_containers = driver.find_elements(By.XPATH, '//div[@data-qa="task-body"]/ul')
+        ul_containers = driver.find_elements(
+            By.XPATH, '//div[@data-qa="task-body"]/ul')
         for ul in ul_containers:
             input_elements = ul.find_elements(
                 By.XPATH, './/input[@type="radio" or @type="checkbox"]'
@@ -607,7 +442,8 @@ def answer_questions(
 
                 submit_button = wait.until(
                     EC.element_to_be_clickable(
-                        (By.XPATH, '//button[@data-qa="vacancy-response-submit-popup"]')
+                        (By.XPATH,
+                         '//button[@data-qa="vacancy-response-submit-popup"]')
                     )
                 )
                 driver.execute_script(
@@ -643,23 +479,14 @@ def fill_in_cover_letter(
     driver: webdriver,
     wait: WebDriverWait,
 ) -> str:
-    """
-    Fill in a cover letter in a web form using the provided message and web driver.
 
-    Args:
-        message (str): The cover letter message to be filled in.
-        driver (webdriver): The web driver used to interact with the web form.
-        wait (WebDriverWait): The wait object for waiting for elements to be interactable.
-
-    Returns:
-        str: The status of the cover letter filling process, either 'SUCCESS' or 'FAILURE'.
-    """
     global COUNTER
     scroll_to_bottom(driver)
     try:
         cover_letter_button = wait.until(
             EC.element_to_be_clickable(
-                (By.XPATH, '//button[@data-qa="vacancy-response-letter-toggle"]')
+                (By.XPATH,
+                 '//button[@data-qa="vacancy-response-letter-toggle"]')
             )
         )
         driver.execute_script("arguments[0].click()", cover_letter_button)
@@ -676,7 +503,8 @@ def fill_in_cover_letter(
 
         submit_button = wait.until(
             EC.element_to_be_clickable(
-                (By.XPATH, '//button[@data-qa="vacancy-response-letter-submit"]')
+                (By.XPATH,
+                 '//button[@data-qa="vacancy-response-letter-submit"]')
             )
         )
         driver.execute_script(
@@ -695,7 +523,8 @@ def fill_in_cover_letter(
             pass
         wait.until(
             EC.presence_of_element_located(
-                (By.XPATH, '//div[@data-qa="vacancy-response-letter-informer"]')
+                (By.XPATH,
+                 '//div[@data-qa="vacancy-response-letter-informer"]')
             )
         )
         COUNTER += 1
@@ -708,16 +537,7 @@ def choose_resume(
     job_title: str,
     driver: webdriver,
 ) -> None:
-    """
-    A function to choose a resume based on the job title using a webdriver.
 
-    Args:
-        job_title (str): The job title to match with the resume.
-        driver (webdriver): The webdriver to interact with the web page.
-
-    Returns:
-        None
-    """
     try:
         default_button = driver.find_element(
             By.XPATH,
@@ -728,7 +548,8 @@ def choose_resume(
         )
 
         for resume, code in dict_resume.RESUME_CODES.items():
-            resume_button = driver.find_element(By.XPATH, f"//input[@id='{code}']")
+            resume_button = driver.find_element(
+                By.XPATH, f"//input[@id='{code}']")
             driver.execute_script(
                 "arguments[0].scrollIntoView(); arguments[0].click();", resume_button
             )
@@ -764,7 +585,8 @@ def click_all_jobs_on_the_page(
         ).text
         apply_link = None
         try:
-            link_element = element.find_element(By.XPATH, './/a[@class="bloko-link"]')
+            link_element = element.find_element(
+                By.XPATH, './/a[@class="bloko-link"]')
 
             apply_link = link_element.get_attribute("href")
             vacancy_info[title] = apply_link
@@ -808,7 +630,8 @@ def click_all_jobs_on_the_page(
         except Exception:
             pass
         if company_name and vacancy_title:
-            customized_message = f"Здравствуйте, уважаемый рекрутер {company_name}!\nПрошу рассмотреть мою кандидатуру на вакансию «{vacancy_title}».\n\n{MESSAGE}"
+            customized_message = \
+                f"Здравствуйте, уважаемый рекрутер {company_name}!\nПрошу рассмотреть мою кандидатуру на вакансию «{vacancy_title}».\n\n{MESSAGE}"
         elif company_name:
             customized_message = (
                 f"Здравствуйте, уважаемый рекрутер {company_name}!\n\n{MESSAGE}"
@@ -854,18 +677,8 @@ def click_all_jobs_on_the_page(
                 continue
 
 
-def clear_region(
-    driver: webdriver,
-) -> None:
-    """
-    Clears the region by clicking on all the 'bloko-tag__cross' buttons within a custom wait of 10 seconds.
+def clear_region(driver: webdriver) -> None:
 
-    Args:
-        driver (webdriver): The WebDriver instance to use
-
-    Returns:
-        None
-    """
     try:
         clear_region_buttons = custom_wait(
             driver,
@@ -879,18 +692,8 @@ def clear_region(
         return
 
 
-def advanced_search(
-    driver: webdriver,
-) -> None:
-    """
-    Perform an advanced search using the given webdriver.
+def advanced_search(driver: webdriver) -> None:
 
-    Args:
-        driver (webdriver): The webdriver to use for the advanced search.
-
-    Returns:
-        None
-    """
     advanced_search_button = eternal_wait(
         driver,
         10,
@@ -969,15 +772,8 @@ def advanced_search(
 def main():
     global COUNTER
 
-    check_cookies_and_login(
-        DRIVER,
-        LOGIN_PAGE,
-        COOKIES_PATH,
-        LOCAL_STORAGE_PATH,
-        SEARCH_LINK,
-        USERNAME,
-        PASSWORD,
-    )
+    check_cookies_and_login(DRIVER,     LOGIN_PAGE,     COOKIES_PATH,
+                            LOCAL_STORAGE_PATH,     SEARCH_LINK,     USERNAME,     PASSWORD, )
 
     if ADVANCED_SEARCH_URL_QUERY:
         DRIVER.get(ADVANCED_SEARCH_URL_QUERY)
@@ -997,7 +793,8 @@ def main():
 
         try:
             next_page_button = WAIT.until(
-                EC.element_to_be_clickable((By.XPATH, '//a[@data-qa="pager-next"]'))
+                EC.element_to_be_clickable(
+                    (By.XPATH, '//a[@data-qa="pager-next"]'))
             )
             DRIVER.execute_script("arguments[0].click()", next_page_button)
         except Exception:
